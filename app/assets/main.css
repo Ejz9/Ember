@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@layer components {
+  .glass-card {
+    @apply bg-white/75 dark:bg-gray-900/75 backdrop-blur-lg;
+    @apply transition-all duration-200;
+    @apply hover:bg-white/90 dark:hover:bg-gray-900/90 hover:ring-2 hover:ring-primary-500;
+  }
+}
+
+@layer utilities {
+    .no-bar { scrollbar-width: none; }
+    .no-bar::-webkit-scrollbar { display: none; }
+
+    .fade-edges {
+        /* top/bottom 16px fade */
+        mask-image: linear-gradient(to bottom, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+    }
+}
