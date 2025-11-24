@@ -27,12 +27,12 @@ export default defineEventHandler(async (event) => {
             userId: session.user.id,
         },
         {
-            $set: body,
+            $set: updateData,
         });
 
     return {
         statusCode: 200,
         statusMessage: 'Snippet updated successfully',
-        complexity: updateData.complexity
+        estimatedComplexity: updateData.complexity
     };
 });

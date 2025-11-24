@@ -41,10 +41,14 @@ export async function calculateComplexity(fragments: Fragment[]): Promise<string
         const text = await new Response(proc.stdout).text();
         const analysis = JSON.parse(text);
 
+        console.log('Analysis:', analysis);
+
         let totalComplexity = 0;
         if (Array.isArray(analysis)) {
-            totalComplexity = analysis.reduce((sum, file) => sum + (file.complexity || 0))
+            totalComplexity = analysis.reduce((sum, file) => sum + (file.Complexity || 0), 0)
         }
+
+        console.log('Complexity:', totalComplexity);
 
         return totalComplexity.toString();
     } catch (error) {

@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
         userId: session.user.id,
         author: session.user.username,
         version: "1.0.0",
-        complexity: estimatedComplexity
+        estimatedComplexity: parseInt(estimatedComplexity),
     });
 
     await snippetData.save();
