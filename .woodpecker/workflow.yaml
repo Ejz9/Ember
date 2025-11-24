@@ -1,0 +1,47 @@
+steps:
+  build-and-deploy:
+    image: docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      GHCR_USERNAME:
+        from_secret: GHCR_USERNAME
+      GHCR_TOKEN:
+        from_secret: GHCR_TOKEN
+      MONGODB_URI:
+        from_secret: MONGODB_URI
+      BETTER_AUTH_SECRET:
+        from_secret: BETTER_AUTH_SECRET
+      BETTER_AUTH_URL:
+        from_secret: BETTER_AUTH_URL
+      GITHUB_CLIENT_ID:
+        from_secret: GITHUB_CLIENT_ID
+      GITHUB_CLIENT_SECRET:
+        from_secret: GITHUB_CLIENT_SECRET
+    commands:
+      # GHCR Login
+      - echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
+
+      # Build and Tag the images
+      - docker build -t ghcr.io/$GHCR_USERNAME/ember:latest .
+
+      # Push images to GHCR
+      - docker push ghcr.io/$GHCR_USERNAME/ember:latest
+
+      # Generate .env file for Docker Compose
+      - echo "NUXT_MONGODB_URI=$MONGODB_URI" > .env
+      - echo "BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET" >> .env
+      - echo "BETTER_AUTH_URL=$BETTER_AUTH_URL" >> .env
+      - echo "NUXT_GITHUB_CLIENT_ID=$GITHUB_CLIENT_ID" >> .env
+      - echo "NUXT_GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET" >> .env
+
+      # Deploy the containers from GHCR
+      - docker compose down || true
+      - docker compose pull
+      - docker compose up -d
+
+    # Test trigger deployment.
+    when:
+      event: [push, pull_request]
+      branch:
+        - main # Change to modify which branch gets automatically deployed (via Woodpecker CI) || Default: main

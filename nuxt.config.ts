@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     MONGODB_URI: process.env.MONGODB_URI,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   },
     nitro: {
       preset: 'bun',

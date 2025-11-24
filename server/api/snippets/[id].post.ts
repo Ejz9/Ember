@@ -1,5 +1,6 @@
 import { Snippet } from '~~/server/models/snippet'
 import { auth } from '~~/server/utils/auth'
+import {calculateComplexity} from "~~/server/utils/complexity";
 
 export default defineEventHandler(async (event) => {
     const snippetId = getRouterParam(event, 'id');
@@ -15,6 +16,11 @@ export default defineEventHandler(async (event) => {
         });
     }
 
+    const updateData = {...body};
+    if (body.fragments) {
+        updateData.complexity = await calculateComplexity(body.fragments);
+    }
+
     await Snippet.updateOne(
         {
             _id: snippetId,
@@ -27,5 +33,6 @@ export default defineEventHandler(async (event) => {
     return {
         statusCode: 200,
         statusMessage: 'Snippet updated successfully',
+        complexity: updateData.complexity
     };
 });

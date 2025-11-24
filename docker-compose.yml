@@ -1,0 +1,10 @@
+services:
+  app:
+    image: ghcr.io/ejz9/ember:latest
+    env_file:
+      - .env
+    ports:
+      - "23000:3000"
+    environment:
+      - MONGODB_URI=${MONGODB_URI} # Database connection
+    restart: always

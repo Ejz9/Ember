@@ -1,4 +1,5 @@
 import { Snippet } from '~~/server/models/snippet'
+import { calculateComplexity } from "~~/server/utils/complexity";
 
 export default defineEventHandler(async (event) => {
     const session = await auth.api.getSession({
@@ -13,11 +14,13 @@ export default defineEventHandler(async (event) => {
     }
 
     const body = await readBody(event);
+    const estimatedComplexity = await calculateComplexity(body.fragments);
     const snippetData = new Snippet({
         ...body,
         userId: session.user.id,
         author: session.user.username,
-        version: "1.0.0"
+        version: "1.0.0",
+        complexity: estimatedComplexity
     });
 
     await snippetData.save();
