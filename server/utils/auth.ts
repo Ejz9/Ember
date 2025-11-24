@@ -2,16 +2,11 @@ import { betterAuth, type BetterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import mongoose from 'mongoose';
 
-let authInstance: BetterAuth;
+export let auth: BetterAuth;
 
-export function useAuth() {
-    if (authInstance) {
-        return authInstance;
-    }
-
+export function initAuth() {
     const config = useRuntimeConfig();
-
-    authInstance = betterAuth({
+    auth = betterAuth({
         database: mongodbAdapter(mongoose.connection.db, {
             client: mongoose.connection.getClient(),
             collectionsPrefix: "better-auth"
@@ -20,7 +15,12 @@ export function useAuth() {
             github: {
                 clientId: config.GITHUB_CLIENT_ID as string,
                 clientSecret: config.GITHUB_CLIENT_SECRET as string,
-                overrideUserInfoOnSignIn: true
+                overrideUserInfoOnSignIn: true,
+                mapProfileToUser: (profile) => {
+                    return {
+                        username: profile.login
+                    }
+                }
             },
         },
         databaseHooks: {
@@ -40,10 +40,17 @@ export function useAuth() {
                     }
                 }
             }
+        },
+        user: {
+            additionalFields: {
+                username: {
+                    type: "string",
+                    required: true
+                }
+            }
         }
     });
-
-    return authInstance;
+    return auth;
 }
 
 /**

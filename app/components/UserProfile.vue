@@ -19,9 +19,16 @@ watch(() => props.user, () => {
 
 const router = useRouter()
 
+const goSnippets = async () => {
+  const user = props.user
+  if (user) {
+    await router.push(`/user/${user.id}`)
+  }
+}
+
 const signOut = async () => {
   await authClient.signOut()
-  router.push('/')
+  await router.push('/')
 }
 </script>
 
@@ -54,8 +61,15 @@ const signOut = async () => {
           </div>
           <USeparator class="my-2" />
           <UButton
+              label="Snippets"
+              color="primary"
+              variant="ghost"
+              @click="goSnippets"
+              icon="i-lucide-archive"
+          />
+          <UButton
               label="Sign out"
-              color="red"
+              color="error"
               variant="ghost"
               @click="signOut"
               icon="i-lucide-log-out"

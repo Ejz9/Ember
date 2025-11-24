@@ -14,11 +14,9 @@ export default defineAppConfig({
       },
       variants: {
         variant: {
-          // This is the variant we will use by default
           outline: {
             root: 'bg-white/75 dark:bg-neutral-900/75 backdrop-blur-lg transition-all duration-200 hover:bg-white/90 dark:hover:bg-neutral-900/90 hover:ring-2 hover:ring-primary-500'
           },
-          // Default Nuxt UI variants below for reference
           solid: {
             root: 'bg-inverted text-inverted'
           },
