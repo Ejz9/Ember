@@ -17,7 +17,8 @@ const snippetSchema = new mongoose.Schema({
     framework: String,
     frameworkVersion: String,
     relatedLinks: [String],
-    estimatedComplexity: String,
+    estimatedComplexity: Number,
+    sccStats: [mongoose.Schema.Types.Mixed],
     fragments: [
         {
             label: String,

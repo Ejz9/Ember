@@ -166,7 +166,7 @@ async function deleteSnippet() {
           <div>
             <h4 class="font-medium mb-2">Tags</h4>
             <div v-if="snippet.tags && snippet.tags.length > 0" class="flex flex-wrap gap-2">
-              <UBadge v-for="tag in snippet.tags" :key="tag" color="blue" variant="subtle">{{ tag }}</UBadge>
+              <UBadge v-for="tag in snippet.tags" :key="tag" color="primary" variant="subtle">{{ tag }}</UBadge>
             </div>
             <p v-else class="text-gray-400 italic">No tags.</p>
           </div>
@@ -176,6 +176,13 @@ async function deleteSnippet() {
               <a v-for="link in snippet.relatedLinks" :key="link" :href="link" target="_blank" class="text-primary-500 hover:underline">{{ link }}</a>
             </div>
             <p v-else class="text-gray-400 italic">No related links.</p>
+          </div>
+          <div>
+            <h4 class="font-medium mb-2">SCC Stats</h4>
+            <div v-if="snippet.sccStats && snippet.sccStats.length > 0" class="flex flex-col gap-2">
+
+            </div>
+            <p v-else class="text-gray-400 italic">No SCC stats.</p>
           </div>
         </div>
       </UCard>

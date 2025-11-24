@@ -128,10 +128,6 @@ watch(codeBlock, (el) => {
             </UBadge>
           </template>
         </div>
-        <span v-if="snippet.complexity" class="flex items-center gap-1" title="Cyclomatic Complexity">
-          <UIcon name="i-lucide-activity" class="w-4 h-4" />
-          {{ snippet.complexity }}
-       </span>
         <UTooltip v-if="snippet.updatedAt" :text="new Date(snippet.updatedAt).toLocaleString()" arrow :content="{ side: 'top' }">
           <p class="text-sm text-gray-500 dark:text-gray-400">
             Modified: {{ new Date(snippet.updatedAt).toLocaleDateString() }}

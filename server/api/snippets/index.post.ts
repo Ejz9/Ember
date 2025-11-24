@@ -14,13 +14,14 @@ export default defineEventHandler(async (event) => {
     }
 
     const body = await readBody(event);
-    const estimatedComplexity = await calculateComplexity(body.fragments);
+    const { total, stats } = await calculateComplexity(body.fragments);
     const snippetData = new Snippet({
         ...body,
         userId: session.user.id,
         author: session.user.username,
         version: "1.0.0",
-        complexity: estimatedComplexity
+        estimatedComplexity: total,
+        sccStats: stats
     });
 
     await snippetData.save();

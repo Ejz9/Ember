@@ -8,6 +8,11 @@ interface Fragment {
     code: string;
 }
 
+interface ComplexityResult {
+    total: number;
+    stats: any[];
+}
+
 const languageExtensions: Record<string, string> = {
     'C': 'c', 'C++': 'cpp', 'C#': 'cs', 'CSS': 'css', 'Dart': 'dart',
     'Docker': 'dockerfile', 'Go': 'go', 'GraphQL': 'graphql', 'HTML': 'html',
@@ -19,9 +24,11 @@ const languageExtensions: Record<string, string> = {
     'YAML': 'yaml'
 };
 
-export async function calculateComplexity(fragments: Fragment[]): Promise<string> {
+export async function calculateComplexity(fragments: Fragment[]): Promise<ComplexityResult> {
+    const result: ComplexityResult = { total: 0, stats: [] };
+
     if (!fragments || fragments.length === 0) {
-        return '0';
+        return result;
     }
     const tmpDir = path.join(os.tmpdir(), `ember-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
@@ -42,14 +49,15 @@ export async function calculateComplexity(fragments: Fragment[]): Promise<string
         const analysis = JSON.parse(text);
 
         let totalComplexity = 0;
-        if (Array.isArray(analysis)) {
-            totalComplexity = analysis.reduce((sum, file) => sum + (file.complexity || 0))
+        if (Array.isArray(analysis) && analysis.length > 0) {
+            result.total = analysis.reduce((sum, file) => sum + (file.Complexity || 0), 0);
+            result.stats = analysis;
         }
 
-        return totalComplexity.toString();
+        return result;
     } catch (error) {
         console.error('Error calculating complexity:', error);
-        return '0';
+        return result;
     } finally {
         await fs.rm(tmpDir, {recursive: true, force: true}).catch(() => {});
     }

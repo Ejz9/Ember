@@ -18,7 +18,9 @@ export default defineEventHandler(async (event) => {
 
     const updateData = {...body};
     if (body.fragments) {
-        updateData.complexity = await calculateComplexity(body.fragments);
+        const { total, stats } = await calculateComplexity(body.fragments);
+        updateData.estimatedComplexity = total;
+        updateData.sccStats = stats;
     }
 
     await Snippet.updateOne(
@@ -27,12 +29,13 @@ export default defineEventHandler(async (event) => {
             userId: session.user.id,
         },
         {
-            $set: body,
+            $set: updateData,
         });
 
     return {
         statusCode: 200,
         statusMessage: 'Snippet updated successfully',
-        complexity: updateData.complexity
+        estimatedComplexity: updateData.complexity,
+        sccStats: updateData.sccStats,
     };
 });
