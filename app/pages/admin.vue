@@ -3,7 +3,9 @@
 </script>
 
 <template>
+  <UContainer>
 
+  </UContainer>
 </template>
 
 <style scoped>

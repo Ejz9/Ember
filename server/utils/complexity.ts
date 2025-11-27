@@ -40,7 +40,7 @@ export async function calculateComplexity(fragments: Fragment[]): Promise<Comple
             return fs.writeFile(path.join(tmpDir, `fragment-${index}.${extension}`), fragment.code);
         }));
 
-        const proc = Bun.spawn(["scc", "--format", "json", tmpDir], {
+        const proc = Bun.spawn(["scc", "--by-file", "--format", "json", tmpDir], {
             stdout: "pipe",
             stderr: "ignore"
         });
@@ -48,10 +48,25 @@ export async function calculateComplexity(fragments: Fragment[]): Promise<Comple
         const text = await new Response(proc.stdout).text();
         const analysis = JSON.parse(text);
 
-        let totalComplexity = 0;
         if (Array.isArray(analysis) && analysis.length > 0) {
-            result.total = analysis.reduce((sum, file) => sum + (file.Complexity || 0), 0);
-            result.stats = analysis;
+            result.total = analysis.reduce((sum, group) => sum + (group.Complexity || 0), 0);
+            const flatFiles: any[] = []
+            for (const group of analysis) {
+                if (group.Files) {
+                    for (const file of group.Files) {
+                        const match = file.Filename.match(/fragment-(\d+)\./);
+                        if (match && match[1]) {
+                            const index = parseInt(match[1], 10);
+                            const originalFragment = fragments[index];
+                            if (originalFragment) {
+                                file.Label = originalFragment.label;
+                            }
+                        }
+                        flatFiles.push(file);
+                    }
+                }
+            }
+            result.stats = flatFiles;
         }
 
         return result;

@@ -7,4 +7,9 @@ services:
       - "23000:3000"
     environment:
       - MONGODB_URI=${MONGODB_URI} # Database connection
+    volumes:
+      - ember_public:/public
     restart: always
+
+volumes:
+  ember_public:
