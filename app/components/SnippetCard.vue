@@ -67,7 +67,7 @@ watch(codeBlock, (el) => {
     <template #header>
       <div class="flex justify-between items-start">
         <div>
-          <h3 class="font-bold mouse-pointer" @click="openSnippet(snippet._id)">{{ snippet.title }}</h3>
+          <h3 class="font-bold cursor-pointer" @click="openSnippet(snippet._id)">{{ snippet.title }}</h3>
           <p class="text-sm text-gray-500 dark:text-gray-400">{{ snippet.author }}</p>
         </div>
         <div class="flex gap-2">

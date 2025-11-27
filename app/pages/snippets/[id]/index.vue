@@ -2,6 +2,10 @@
 import { useClipboard } from '@vueuse/core';
 import { authClient } from '~/lib/auth-client';
 import type {Snippet} from "#shared/snippet-schema";
+import { getComplexityLevel } from "~/utils/complexity-formatter";
+import type { TableColumn } from '@nuxt/ui'
+import type {ComplexityElement} from "#shared/snippet-schema";
+
 
 const route = useRoute();
 const router = useRouter();
@@ -11,7 +15,7 @@ const { data: snippet, pending, error } = await useFetch<Snippet>(`/api/snippets
   key: `snippet-${id}`
 });
 
-const session = authClient.useSession();
+const session = authClient.useSession()
 const isAuthor = computed(() => {
   if (!session.data) {
     return false;
@@ -29,6 +33,25 @@ const tabItems = computed(() => {
     language: fragment.language
   }));
 });
+
+function formatBytes(bytes: number) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+const columns: TableColumn<ComplexityElement>[] = [
+  { id: 'Label', accessorKey: 'Label', },
+  { id: 'Language', accessorKey: 'Language',},
+  { id: 'Lines', accessorKey: 'Lines', },
+  { id: 'Code', accessorKey: 'Code',},
+  { id: 'Comment', accessorKey: 'Comment',},
+  { id: 'Blank', accessorKey: 'Blank', },
+  { id: 'Complexity', accessorKey: 'Complexity',},
+  { id: 'Bytes', accessorKey: 'Bytes',}
+];
 
 const langMap: Record<string, string> = {
   'Plaintext': 'plaintext',
@@ -177,12 +200,25 @@ async function deleteSnippet() {
             </div>
             <p v-else class="text-gray-400 italic">No related links.</p>
           </div>
-          <div>
+          <USeparator class="md:col-span-2"/>
+          <div v-if="snippet.sccStats.length > 0" class="md:col-span-2">
             <h4 class="font-medium mb-2">SCC Stats</h4>
-            <div v-if="snippet.sccStats && snippet.sccStats.length > 0" class="flex flex-col gap-2">
-
-            </div>
-            <p v-else class="text-gray-400 italic">No SCC stats.</p>
+            <UTable :data="snippet.sccStats" :columns="columns">
+              <template #Complexity-cell="{ row }">
+                <UTooltip :text="getComplexityDescription(row.original.Complexity)">
+                  <UBadge
+                      :color="getComplexityLevel(row.original.Complexity).color"
+                      :icon="getComplexityLevel(row.original.Complexity).icon"
+                      variant="subtle"
+                  >
+                    {{ getComplexityLevel(row.original.Complexity).label }}
+                  </UBadge>
+                </UTooltip>
+              </template>
+              <template #Bytes-cell="{ row }">
+                <span>{{ formatBytes(row.original.Bytes) }}</span>
+              </template>
+              </UTable>
           </div>
         </div>
       </UCard>

@@ -18,5 +18,10 @@ export default defineNuxtConfig({
               base: "./public/uploads/avatars"
           }
       }
+    },
+    ui: {
+        theme: {
+            colors: ['green', 'yellow', 'orange']
+        }
     }
 });
