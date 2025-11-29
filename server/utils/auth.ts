@@ -1,6 +1,7 @@
 import { betterAuth, type BetterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import mongoose from 'mongoose';
+import {put} from "@vercel/blob";
 
 export let auth: BetterAuth;
 
@@ -78,13 +79,15 @@ async function downloadAndSaveAvatar(imageUrl: string | null | undefined): Promi
         const extensionMap: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/gif': 'gif', 'image/webp': 'webp' };
         const fileExtension = extensionMap[imageBlob.type] || 'jpg';
         const newFileName = `${githubId}.${fileExtension}`;
-        const newFilePath = `/uploads/avatars/${newFileName}`;
+        const newUrl= `/api/avatars/${newFileName}`;
 
         // Save the new avatar. This will overwrite any existing file with the same name.
-        await useStorage("uploads_avatars").setItemRaw(newFileName, imageBuffer);
+        const blob = await put(newFileName, imageBuffer, {
+            access: 'public',
+            addRandomSuffix: false // keeps filename deterministic
+        });
 
-        return newFilePath;
-
+        return blob.url
     } catch (error) {
         console.error("Failed to download or process avatar:", error);
         return null;

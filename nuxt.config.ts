@@ -11,10 +11,11 @@ export default defineNuxtConfig({
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   },
     nitro: {
-      preset: 'bun',
+      //preset: 'bun',
       storage: {
-          uploads_avatars: {
-              driver: "fs",
+          avatars: {
+              driver: process.env.NODE_ENV === 'production' ? 'vercel-blob' : 'fs',
+              access: 'public',
               base: "./public/uploads/avatars"
           }
       }
