@@ -1,10 +1,10 @@
-import cron from 'node-cron'
+import { Cron } from 'croner';
 import {Stat} from "~~/server/models/stat";
 import {User} from "~~/server/models/user";
 import {Snippet} from "~~/server/models/snippet";
 
 export default defineNitroPlugin((nitroApp) => {
-    cron.schedule('0 0 * * *', async () => {
+    new Cron('0 0 * * *', async () => {
         console.log('Running Stats Snapshot...');
 
         try {

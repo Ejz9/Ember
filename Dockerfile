@@ -10,7 +10,7 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 
 ENV NODE_ENV=production
-RUN bun run build
+RUN NITRO_PRESET=bun bun run build
 
 FROM base AS runner
 WORKDIR /app
