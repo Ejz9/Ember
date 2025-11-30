@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { authClient } from '~/lib/auth-client'
+import {useSignOut} from "~/composables/useAuth";
 
 const props = defineProps({
   user: {
@@ -26,10 +26,7 @@ const goSnippets = async () => {
   }
 }
 
-const signOut = async () => {
-  await authClient.signOut()
-  await router.push('/')
-}
+const signOut = useSignOut()
 </script>
 
 <template>

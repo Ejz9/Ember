@@ -87,6 +87,8 @@ async function downloadAndSaveAvatar(imageUrl: string | null | undefined): Promi
             addRandomSuffix: false // keeps filename deterministic
         });
 
+        //TODO Clean up for fs and vercel blob
+
         return blob.url
     } catch (error) {
         console.error("Failed to download or process avatar:", error);

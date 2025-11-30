@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     nitro: {
       //preset: 'bun',
       storage: {
+          //TODO Cleanup for vercel blob and fs
           avatars: {
               driver: process.env.NODE_ENV === 'production' ? 'vercel-blob' : 'fs',
               access: 'public',
