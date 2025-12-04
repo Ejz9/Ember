@@ -3,10 +3,6 @@ import SnippetCard from "@/components/SnippetCard.vue";
 import type {Snippet} from "#shared/snippet-schema";
 import {filteredSnippets} from "@/utils/snippet-handling";
 
-definePageMeta({
-  middleware: ['snippet-author']
-});
-
 const route = useRoute();
 
 const { data: snippetsData, pending } = await useFetch<Snippet[]>(

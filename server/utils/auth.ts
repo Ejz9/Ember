@@ -29,6 +29,12 @@ export function initAuth() {
                 create: {
                     before: async (user) => {
                         user.image = await downloadAndSaveAvatar(user.image);
+
+                        const usersCollection = mongoose.connection.db.collection('users');
+                        const userCount = await usersCollection.countDocuments();
+                        if (userCount === 0) {
+                            (user as any).isAdmin = true;
+                        }
                         return { data: user };
                     }
                 },
@@ -47,9 +53,13 @@ export function initAuth() {
                 username: {
                     type: "string",
                     required: true
+                },
+                isAdmin: {
+                    type: "boolean",
+                    default: false
                 }
             }
-        }
+        },
     });
     return auth;
 }

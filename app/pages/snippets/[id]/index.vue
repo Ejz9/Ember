@@ -11,6 +11,10 @@ const route = useRoute();
 const router = useRouter();
 const id = route.params.id;
 
+definePageMeta({
+  middleware: ['snippet-access']
+});
+
 const { data: snippet, pending, error } = await useFetch<Snippet>(`/api/snippets/${id}`, {
   key: `snippet-${id}`
 });

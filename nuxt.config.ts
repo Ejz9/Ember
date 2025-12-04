@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     },
     ui: {
         theme: {
-            colors: ['green', 'yellow', 'orange']
+            colors: ['green', 'yellow', 'orange', 'red', 'error']
         }
     }
 });

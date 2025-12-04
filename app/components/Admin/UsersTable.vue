@@ -1,18 +1,9 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
+import type {TableColumn} from "@nuxt/ui";
 
-const { data: changes, pending, error } = useFetch(`/api/admin/changes`);
-
-interface AuditLogEntry {
-  snippetId: string
-  userId: string
-  email: string
-  action: 'created' | 'updated' | 'deleted'
-  date: string
-}
+const { data: changes, pending, error } = useFetch(`/api/admin/users`);
 
 const columns: TableColumn<AuditLogEntry>[] = [
-  { key: 'snippetId', accessorKey: 'SnippetID' },
   { key: 'userId', accessorKey: 'UserID'},
   { key: 'date', accessorKey: 'Date' },
   { key: 'action', accessorKey: 'Action' },
@@ -22,7 +13,7 @@ const columns: TableColumn<AuditLogEntry>[] = [
 
 <template>
   <UTable
-      :data="changes"
+      :data="data"
       :columns="columns"
       class="shrink-0"
       :ui="{
@@ -48,12 +39,12 @@ const columns: TableColumn<AuditLogEntry>[] = [
 
     <template #Date-cell="{ row }">
       {{ new Date(row.original.createdAt).toLocaleString('en-US', {
-        day: 'numeric',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      }) }}
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }) }}
     </template>
 
     <template #Action-cell="{ row }">
@@ -72,3 +63,8 @@ const columns: TableColumn<AuditLogEntry>[] = [
     </template>
   </UTable>
 </template>
+
+<style scoped>
+
+</style>
+

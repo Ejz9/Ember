@@ -1,5 +1,6 @@
 import { Snippet } from '~~/server/models/snippet'
 import { calculateComplexity } from "~~/server/utils/complexity";
+import {AuditLog} from "~~/server/models/audit-log";
 
 export default defineEventHandler(async (event) => {
     const session = await auth.api.getSession({
@@ -22,6 +23,13 @@ export default defineEventHandler(async (event) => {
         version: "1.0.0",
         estimatedComplexity: total,
         sccStats: stats
+    });
+
+    await AuditLog.create({
+        action: 'created',
+        snippetId: snippetData._id,
+        userId: session.user.id,
+        email: session.user.email
     });
 
     await snippetData.save();

@@ -128,7 +128,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
       />
       <AvatarFallback
           v-else
-          :value="session.data?.user.id"
+          :value="session.data?.user.id ?? ''"
           :alt="session.data?.user.email"
           size="md"
       />

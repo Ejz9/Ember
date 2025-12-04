@@ -9,6 +9,11 @@ const props = defineProps<{
 }>()
  */
 
+const props = defineProps<{
+  //period: Period
+  //range: Range
+}>()
+
 const { data: stats, pending, error } = useFetch<StatElement[]>(`/api/admin/stats`);
 </script>
 
@@ -34,7 +39,7 @@ const { data: stats, pending, error } = useFetch<StatElement[]>(`/api/admin/stat
         </span>
 
         <UBadge
-            :color="stat.variation > 0 ? 'success' : 'error'"
+            :color="stat.variation > 0 ? 'green' : 'error'"
             variant="subtle"
             class="text-xs"
         >

@@ -58,6 +58,14 @@ const signOut = useSignOut()
           </div>
           <USeparator class="my-2" />
           <UButton
+            label="Admin"
+            color="orange"
+            variant="ghost"
+            to="/admin"
+            icon="i-lucide-shield"
+          />
+
+          <UButton
               label="Snippets"
               color="primary"
               variant="ghost"

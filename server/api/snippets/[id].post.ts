@@ -1,6 +1,7 @@
 import { Snippet } from '~~/server/models/snippet'
 import { auth } from '~~/server/utils/auth'
 import {calculateComplexity} from "~~/server/utils/complexity";
+import {AuditLog} from "~~/server/models/audit-log";
 
 export default defineEventHandler(async (event) => {
     const snippetId = getRouterParam(event, 'id');
@@ -23,14 +24,24 @@ export default defineEventHandler(async (event) => {
         updateData.sccStats = stats;
     }
 
-    await Snippet.updateOne(
+    const result = await Snippet.updateOne(
         {
             _id: snippetId,
             userId: session.user.id,
         },
         {
             $set: updateData,
+        }
+    );
+
+    if (result.modifiedCount > 0) {
+        await AuditLog.create({
+            action: 'updated',
+            snippetId,
+            userId: session.user.id,
+            email: session.user.email,
         });
+    }
 
     return {
         statusCode: 200,

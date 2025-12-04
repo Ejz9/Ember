@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, format } from 'date-fns'
+import { eachDayOfInterval, format, startOfDay } from 'date-fns'
 import { VisXYContainer, VisLine, VisAxis, VisArea, VisCrosshair, VisTooltip } from '@unovis/vue'
 import type { Period, Range } from '~/types'
-
-const cardRef = useTemplateRef<HTMLElement | null>('cardRef')
 
 const props = defineProps<{
   period: Period
@@ -15,21 +13,31 @@ type DataRecord = {
   amount: number
 }
 
-//const { width } = useElementSize(cardRef)
+const { data: activity, pending } = useFetch('/api/admin/activity', {
+  lazy: true,
+  server: false,
+})
 
 const data = ref<DataRecord[]>([])
 
-watch([() => props.period, () => props.range], () => {
-  const dates = ({
-    daily: eachDayOfInterval,
-    weekly: eachWeekOfInterval,
-    monthly: eachMonthOfInterval
-  } as Record<Period, typeof eachDayOfInterval>)[props.period](props.range)
+watch([() => activity.value, () => props.period, () => props.range], () => {
+  if (!activity.value) {
+    return
+  }
 
-  const min = 1000
-  const max = 10000
+  const dailyTotals = new Map<number, number>()
 
-  data.value = dates.map(date => ({ date, amount: Math.floor(Math.random() * (max - min + 1)) + min }))
+  for (const stat of activity.value) {
+    const day = startOfDay(new Date(stat.createdAt)).getTime()
+    dailyTotals.set(day, (dailyTotals.get(day) || 0) + 1)
+  }
+
+  const dates = eachDayOfInterval(props.range)
+
+  data.value = dates.map(date => {
+    const day = startOfDay(date).getTime()
+    return { date, amount: dailyTotals.get(day) || 0 }
+  })
 }, { immediate: true })
 
 const x = (_: DataRecord, i: number) => i
@@ -37,21 +45,16 @@ const y = (d: DataRecord) => d.amount
 
 const total = computed(() => data.value.reduce((acc: number, { amount }) => acc + amount, 0))
 
-const formatNumber = new Intl.NumberFormat('en', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format
+const formatNumber = new Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format
 
 const formatDate = (date: Date): string => {
-  return ({
-    daily: format(date, 'd MMM'),
-    weekly: format(date, 'd MMM'),
-    monthly: format(date, 'MMM yyy')
-  })[props.period]
+  return format(date, 'd MMM')
 }
 
 const xTicks = (i: number) => {
   if (i === 0 || i === data.value.length - 1 || !data.value[i]) {
     return ''
   }
-
   return formatDate(data.value[i].date)
 }
 
@@ -59,14 +62,14 @@ const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amo
 </script>
 
 <template>
-  <UCard ref="cardRef" :ui="{ root: 'overflow-visible', body: '!px-0 !pt-0 !pb-3' }">
+  <UCard :ui="{ root: 'overflow-visible', body: '!px-0 !pt-0 !pb-3' }">
     <template #header>
       <div>
         <p class="text-xs text-muted uppercase mb-1.5">
-          Revenue
+          Snippets
         </p>
         <p class="text-3xl text-highlighted font-semibold">
-          {{ formatNumber(total) }}
+          {{ total }}
         </p>
       </div>
     </template>
@@ -75,7 +78,6 @@ const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amo
         :data="data"
         :padding="{ top: 40 }"
         class="h-96"
-        :width="96"
     >
       <VisLine
           :x="x"

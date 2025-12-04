@@ -1,15 +1,10 @@
 <script setup lang="ts">
-
-definePageMeta({
-  layout: 'admin'
-})
-
 </script>
 
 <template>
-  <UDashboardPanel id="home">
+  <UDashboardPanel id="users">
     <template #header>
-      <UDashboardNavbar title="Home" :ui="{ right: 'gap-3' }">
+      <UDashboardNavbar title="Users">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -23,7 +18,7 @@ definePageMeta({
     </template>
 
     <template #body>
-
+      <AdminUsersTable />
     </template>
   </UDashboardPanel>
 </template>

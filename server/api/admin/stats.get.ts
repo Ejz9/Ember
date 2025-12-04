@@ -25,12 +25,14 @@ export default defineEventHandler(async (event) => {
     const currentFragments = fragmentAggregate[0]?.total || 0
     const maxComplexityValue = maxComplexity?.estimatedComplexity || 0
 
-    const yesterday = subDays(new Date(), 1)
-    const snapshot = await Stat.findOne({ date: { $lte: yesterday } }).sort({ date: -1})
+    const snapshot = await Stat.findOne().sort({ createdAt: -1 })
 
     const calcVariance = (curr: number, prev: number | undefined) => {
-        if (!prev) return 0;
-        return Math.abs(curr - prev) / prev * 100;
+        if (prev === undefined) return 0;
+        if (prev === 0) return curr > 0 ? 100 : 0;
+
+        const percentageChange = ((curr - prev) / prev) * 100;
+        return Math.round(percentageChange);
     }
 
     return [
@@ -49,7 +51,7 @@ export default defineEventHandler(async (event) => {
         {
             title: 'Fragments',
             value: currentFragments,
-            icon: 'i-lucide-code-slash',
+            icon: 'i-lucide:puzzle',
             variation: calcVariance(currentFragments, snapshot?.fragments)
         },
         {
