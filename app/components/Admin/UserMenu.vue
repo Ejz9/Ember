@@ -132,7 +132,9 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
           :alt="session.data?.user.email"
           size="md"
       />
-      {{session.data?.user.name}}
+      <span v-if="!collapsed" class="truncate text-gray-900 dark:text-white font-semibold">
+        {{session.data?.user.name}}
+      </span>
     </UButton>
 
     <template #chip-leading="{ item }">

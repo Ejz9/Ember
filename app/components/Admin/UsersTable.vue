@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import type {TableColumn} from "@nuxt/ui";
+import type {User} from "better-auth";
 
-const { data: changes, pending, error } = useFetch(`/api/admin/users`);
+const { data: users, pending, error } = useFetch(`/api/admin/users`);
 
-const columns: TableColumn<AuditLogEntry>[] = [
+const columns: TableColumn<User>[] = [
   { key: 'userId', accessorKey: 'UserID'},
-  { key: 'date', accessorKey: 'Date' },
-  { key: 'action', accessorKey: 'Action' },
-  { key: 'email', accessorKey: 'Email', }
+  { key: 'user', accessorKey: 'User' },
+  { key: 'email', accessorKey: 'Email' },
+  { key: 'lastseen', accessorKey: 'LastSeen', }
 ];
+
+const imageError = ref(false)
+const handleImageError = () => {
+  imageError.value = true
+}
 </script>
 
 <template>
   <UTable
-      :data="data"
+      :data="users"
       :columns="columns"
       class="shrink-0"
       :ui="{
@@ -24,42 +30,49 @@ const columns: TableColumn<AuditLogEntry>[] = [
       td: 'border-b border-default'
     }"
   >
-    <template #SnippetID-cell="{ row }">
-      <a :href="`/snippets/${row.original.snippetId}`" class="text-primary-500 hover:underline">
-        #{{ row.original.snippetId }}
-      </a>
-    </template>
-
     <template #UserID-cell="{ row }">
-      <a :href="`/user/${row.original.snippetId}`" class="text-primary-500 hover:underline">
-        #{{ row.original.userId }}
+      <a :href="`/user/${row.original._id}`" class="text-primary-500 hover:underline">
+        #{{ row.original._id }}
       </a>
-    </template>
-
-
-    <template #Date-cell="{ row }">
-      {{ new Date(row.original.createdAt).toLocaleString('en-US', {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }) }}
-    </template>
-
-    <template #Action-cell="{ row }">
-      <UBadge
-          :color="{ created: 'green', updated: 'orange', deleted: 'red' }[row.original.action]"
-          class="capitalize"
-          variant="subtle"
-      >
-        {{ row.original.action }}
-      </UBadge>
     </template>
 
     <template #Email-cell="{ row }">
-
       {{ row.original.email }}
+    </template>
+
+    <template #User-cell="{ row }">
+      <div class="flex items-center gap-3">
+        <UAvatar
+            v-if="row.original.image && !imageError"
+            :src="row.original.image"
+            alt="User Avatar"
+            size="md"
+            @error="handleImageError"
+        />
+        <AvatarFallback
+            v-else
+            :value="row.original.image ?? ''"
+            :alt="row.original.image"
+            size="md"
+        />
+        <div class="text-sm">
+          <div class="font-medium text-gray-900 dark:text-white">{{ row.original.name }}</div>
+          <div class="text-gray-500 dark:text-gray-400">#{{ row.original._id }}</div>
+        </div>
+      </div>
+    </template>
+
+    <template #Name-cell="{ row }">
+      {{ row.original.name }}
+    </template>
+
+
+    <template #LastSeen-cell="{ row }">
+      {{ new Date(row.original.updatedAt).toLocaleString('en-US', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+      }) }}
     </template>
   </UTable>
 </template>
@@ -67,4 +80,3 @@ const columns: TableColumn<AuditLogEntry>[] = [
 <style scoped>
 
 </style>
-

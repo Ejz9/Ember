@@ -63,7 +63,8 @@ watch(codeBlock, (el) => {
 </script>
 
 <template>
-  <UCard class="flex flex-col h-114" :ui="{ body: 'flex flex-col flex-1 min-h-0 relative' }">
+  <!-- Actual Card Content -->
+  <UCard v-if="snippet?._id" class="flex flex-col h-114" :ui="{ body: 'flex flex-col flex-1 min-h-0 relative' }">
     <template #header>
       <div class="flex justify-between items-start">
         <div>
@@ -96,7 +97,7 @@ watch(codeBlock, (el) => {
       </ScrollableContainer>
 
       <!-- Code Preview -->
-      <UTabs v-if="!isExpanded && snippet.tabItems && snippet.tabItems.length" :items="snippet.tabItems" class="flex flex-col flex-1">
+      <UTabs v-if="!isExpanded && snippet.tabItems?.length" :items="snippet.tabItems" class="flex flex-col flex-1">
         <template #content="{ item }">
           <div class="bg-gray-100 dark:bg-gray-800 rounded-md h-40 select-none">
             <pre class="h-full"><code ref="codeBlock" :class="langMap[item.language] || langMap['']" class="h-full overflow-hidden">{{ item.code }}</code></pre>

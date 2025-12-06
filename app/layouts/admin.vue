@@ -9,6 +9,7 @@ const links = [[{
   label: 'Dashboard',
   icon: 'i-lucide-house',
   to: '/admin',
+  exact: true,
   onSelect: () => {
     open.value = false
   }
@@ -56,7 +57,7 @@ const groups = computed(() => [{
     id: 'source',
     label: 'View page source',
     icon: 'i-simple-icons-github',
-    to: `https://github.com/ember/blob/main/app/pages${route.path === '/' ? '/index' : route.path}.vue`,
+    to: `https://github.com/Ejz9/ember/blob/main/app/pages${route.path === '/' ? '/index' : route.path}.vue`,
     target: '_blank'
   }]
 }])
@@ -81,11 +82,10 @@ const groups = computed(() => [{
             size="lg"
             color="primary"
             icon="i-lucide-arrow-left"
-            label="Back to Applicaiton"/>
+            label="Back to Application"/>
       </template>
 
       <template #default="{ collapsed }">
-        <!--TODO Work on Search Button -->
         <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
 
         <UNavigationMenu
@@ -110,7 +110,7 @@ const groups = computed(() => [{
       </template>
     </UDashboardSidebar>
 
-    <UDashboardSearch :groups="groups" />
+    <UDashboardSearch :groups="groups" class=""/>
 
     <slot />
   </UDashboardGroup>

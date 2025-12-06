@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SnippetCard from "@/components/SnippetCard.vue";
 import type {Snippet} from "#shared/snippet-schema";
 import {filteredSnippets} from "@/utils/snippet-handling";
 

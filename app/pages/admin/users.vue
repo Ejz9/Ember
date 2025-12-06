@@ -6,15 +6,9 @@
     <template #header>
       <UDashboardNavbar title="Users">
         <template #leading>
-          <UDashboardSidebarCollapse />
+          <UDashboardSidebarCollapse size="lg" />
         </template>
       </UDashboardNavbar>
-
-      <UDashboardToolbar>
-        <template #left>
-
-        </template>
-      </UDashboardToolbar>
     </template>
 
     <template #body>
