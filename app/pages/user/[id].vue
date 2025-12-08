@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type {Snippet} from "#shared/snippet-schema";
 import {filteredSnippets} from "@/utils/snippet-handling";
+import {authClient} from "~/lib/auth-client";
 
 const route = useRoute();
 
@@ -8,6 +9,7 @@ const { data: snippetsData, pending } = await useFetch<Snippet[]>(
     () => `/api/snippets/user-snippets/${route.params.id}`
 );
 
+const session = authClient.useSession();
 const query = ref('');
 
 const snippets = computed(() => filteredSnippets(snippetsData.value, query.value));
@@ -15,13 +17,16 @@ const snippets = computed(() => filteredSnippets(snippetsData.value, query.value
 
 <template>
   <UContainer>
-    <UInput
-        v-model="query"
-        icon="i-lucide-search"
-        size="xl"
-        placeholder="Search"
-        class="my-8"
-    />
+    <div class="flex justify-between items-center">
+      <UInput
+          v-model="query"
+          icon="i-lucide-search"
+          size="xl"
+          placeholder="Search"
+          class="my-8"
+      />
+      <UButton v-if="session.data" loading-auto to="/snippets/new" size="xl" icon="i-lucide-plus" color="primary" variant="solid"/>
+    </div>
 
     <div v-if="pending">
       Loading...

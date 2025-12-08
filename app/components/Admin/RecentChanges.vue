@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getPaginationRowModel } from '@tanstack/vue-table'
 import type { TableColumn } from '@nuxt/ui'
 
 const props = defineProps<{
@@ -6,6 +7,7 @@ const props = defineProps<{
 }>()
 
 const page = ref(1)
+const table = useTemplateRef('table')
 
 const { data: changes, pending, error } = useFetch(`/api/admin/changes`, {
   query: {
@@ -33,8 +35,10 @@ const columns: TableColumn<AuditLogEntry>[] = [
 
 <template>
   <UTable
+      ref="table"
       :data="changes"
       :columns="columns"
+      :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
       class="shrink-0"
       :ui="{
       base: 'table-fixed border-separate border-spacing-0',
@@ -82,4 +86,12 @@ const columns: TableColumn<AuditLogEntry>[] = [
       {{ row.original.email }}
     </template>
   </UTable>
+  <div class="flex justify-end border-t border-default pt-4 px-4">
+    <UPagination
+        :page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
+        :items-per-page="table?.tableApi?.getState().pagination.pageSize"
+        :total="table?.tableApi?.getFilteredRowModel().rows.length"
+        @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)"
+    />
+  </div>
 </template>
