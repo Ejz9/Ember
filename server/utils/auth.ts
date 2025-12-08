@@ -1,7 +1,7 @@
 import { betterAuth, type BetterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import mongoose from 'mongoose';
-import {put} from "@vercel/blob";
+import {head, put} from "@vercel/blob";
 
 export let auth: BetterAuth;
 
@@ -40,8 +40,11 @@ export function initAuth() {
                 },
                 update: {
                     before: async (updates, user) => {
-                        if (updates.image) {
-                            updates.image = await downloadAndSaveAvatar(updates.image);
+                        const newAvatar = await downloadAndSaveAvatar(updates.image);
+                        if (newAvatar) {
+                            updates.image = newAvatar;
+                        } else {
+                            delete updates.image;
                         }
                         return { data: updates };
                     }
@@ -91,10 +94,21 @@ async function downloadAndSaveAvatar(imageUrl: string | null | undefined): Promi
         const newFileName = `${githubId}.${fileExtension}`;
         const newUrl= `/api/avatars/${newFileName}`;
 
+        try {
+            const existingBlob = await head(newFileName);
+            if (existingBlob.size === imageBuffer.byteLength) {
+                return existingBlob.url;
+            }
+        } catch (e) {
+
+        }
+
         // Save the new avatar. This will overwrite any existing file with the same name.
         const blob = await put(newFileName, imageBuffer, {
             access: 'public',
-            addRandomSuffix: false // keeps filename deterministic
+            addRandomSuffix: false, // keeps filename deterministic
+            allowOverwrite: true,
+
         });
 
         //TODO Clean up for fs and vercel blob

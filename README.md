@@ -54,5 +54,5 @@ Ember is built using:
 - Vite - Bundler for development and production
 - Nitro - Backend server of Nuxt.
 - MongoDB - noSQL database
-  Dependencies: https://github.com/Ejz9/Ember/blob/main/package.json
+- Dependencies: https://github.com/Ejz9/Ember/blob/main/package.json
 
