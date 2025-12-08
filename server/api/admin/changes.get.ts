@@ -12,10 +12,11 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    // Fetch the last 5 audit log entries
+    const query = getQuery(event)
+
     return AuditLog.find()
       .sort({ createdAt: -1 })
-      .limit(5)
+      .limit(query.limit)
       .select('snippetId userId email action createdAt -_id')
       .lean();
 })

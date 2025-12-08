@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { eachDayOfInterval, format, startOfDay } from 'date-fns'
+import { format, startOfDay, endOfDay } from 'date-fns'
 import { VisXYContainer, VisLine, VisAxis, VisArea, VisCrosshair, VisTooltip } from '@unovis/vue'
 import type { Period, Range } from '~/types'
 
@@ -13,32 +13,29 @@ type DataRecord = {
   amount: number
 }
 
-const { data: activity, pending } = useFetch('/api/admin/activity', {
-  lazy: true,
-  server: false,
+const queryParams = computed(() => {
+  const start = startOfDay(new Date(props.range.start))
+  const end = endOfDay(new Date(props.range.end))
+
+  return {
+    range: JSON.stringify({
+      start: start.toISOString(),
+      end: end.toISOString()
+    }),
+    period: props.period,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+  }
 })
 
-const data = ref<DataRecord[]>([])
+const { data: activity, pending } = useFetch<any[]>('/api/admin/activity', {
+  query: queryParams,
+  lazy: true,
+  server: false,
+});
 
-watch([() => activity.value, () => props.period, () => props.range], () => {
-  if (!activity.value) {
-    return
-  }
-
-  const dailyTotals = new Map<number, number>()
-
-  for (const stat of activity.value) {
-    const day = startOfDay(new Date(stat.createdAt)).getTime()
-    dailyTotals.set(day, (dailyTotals.get(day) || 0) + 1)
-  }
-
-  const dates = eachDayOfInterval(props.range)
-
-  data.value = dates.map(date => {
-    const day = startOfDay(date).getTime()
-    return { date, amount: dailyTotals.get(day) || 0 }
-  })
-}, { immediate: true })
+const data = computed<DataRecord[]>(() => {
+  return activity.value?.map(item => ({ ...item, date: new Date(item.date) })) || []
+})
 
 const x = (_: DataRecord, i: number) => i
 const y = (d: DataRecord) => d.amount

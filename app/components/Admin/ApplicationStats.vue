@@ -1,20 +1,32 @@
 <script setup lang="ts">
 import type { Period, Range } from '~/types'
 import type { StatElement } from '#shared/stat-schema'
+import {endOfDay, startOfDay} from "date-fns";
 
-/*
 const props = defineProps<{
   period: Period
   range: Range
 }>()
- */
 
-const props = defineProps<{
-  //period: Period
-  //range: Range
-}>()
+const queryParams = computed(() => {
+  const start = startOfDay(new Date(props.range.start))
+  const end = endOfDay(new Date(props.range.end))
 
-const { data: stats, pending, error } = useFetch<StatElement[]>(`/api/admin/stats`);
+  return {
+    range: JSON.stringify({
+      start: start.toISOString(),
+      end: end.toISOString()
+    }),
+    period: props.period,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+  }
+})
+ 
+const { data: stats, pending, error } = useFetch<StatElement[]>(`/api/admin/stats`, {
+  query: queryParams,
+  lazy: true,
+  server: false,
+});
 </script>
 
 <template>
@@ -39,7 +51,7 @@ const { data: stats, pending, error } = useFetch<StatElement[]>(`/api/admin/stat
         </span>
 
         <UBadge
-            :color="stat.variation > 0 ? 'green' : 'error'"
+            :color="stat.variation > 0 ? 'green' : stat.variation < 0 ? 'red' : 'gray'"
             variant="subtle"
             class="text-xs"
         >

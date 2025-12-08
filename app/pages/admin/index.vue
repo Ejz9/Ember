@@ -39,18 +39,17 @@ const period = ref<Period>('daily')
       <UDashboardToolbar>
         <template #left>
           <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
-          <!--TODO: Implement proper scaling across components for selection -->
-          <AdminDateRangePicker v-model="range" class="-ms-1 pointer-events-none text-muted" />
+          <AdminDateRangePicker v-model="range" class="-ms-1" />
 
-          <AdminPeriodSelect v-model="period" :range="range" class="pointer-events-none text-muted"/>
+          <AdminPeriodSelect v-model="period" :range="range" />
         </template>
       </UDashboardToolbar>
     </template>
 
     <template #body>
-      <AdminApplicationStats />
+      <AdminApplicationStats :period="period" :range="range" />
       <AdminActivityChart :period="period" :range="range " />
-      <AdminRecentChanges :period="period" :range="range" />
+      <AdminRecentChanges :limit="5" />
     </template>
   </UDashboardPanel>
 </template>

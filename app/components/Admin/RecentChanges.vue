@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
 
-const { data: changes, pending, error } = useFetch(`/api/admin/changes`);
+const props = defineProps<{
+  limit: number
+}>()
+
+const page = ref(1)
+
+const { data: changes, pending, error } = useFetch(`/api/admin/changes`, {
+  query: {
+    limit: props.limit,
+    page: page,
+  },
+});
 
 interface AuditLogEntry {
   snippetId: string

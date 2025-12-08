@@ -21,6 +21,13 @@ const links = [[{
     open.value = false
   }
 }, {
+  label: 'Audit Log',
+  icon: 'i-lucide-clock',
+  to: '/admin/audit-log',
+  onSelect: () => {
+    open.value = false
+  }
+},/* {
   label: 'Security',
   icon: 'i-lucide-shield',
   to: '/admin/security',
@@ -34,7 +41,7 @@ const links = [[{
   onSelect: () => {
     open.value = false
   }
-}], [{
+}*/], [{
   label: 'Feedback',
   icon: 'i-lucide-message-circle',
   to: 'https://github.com/nuxt-ui-templates/dashboard',

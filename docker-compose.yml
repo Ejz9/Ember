@@ -6,7 +6,7 @@ services:
     ports:
       - "23000:3000"
     environment:
-      - MONGODB_URI=${MONGODB_URI} # Database connection
+      - MONGODB_URI=${MONGODB_URI}
     volumes:
       - ember_public:/public
     restart: always
