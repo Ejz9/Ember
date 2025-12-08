@@ -1,75 +1,58 @@
-# Nuxt Minimal Starter
+# Ember.
+Simple, self-hosted code snippet storage built with Nuxt.
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Features
+- Create, edit, update and delete snippets.
+- Smart and familiar code editor.
+- Syntax highlighting for many languages.
+- Public and private snippets.
+- Powered by Better Auth.
+- Modern interface using Nuxt UI & Tailwind.
+- Docker deployment with a small footprint.
 
-## Setup
+# Demo
 
-Make sure to install dependencies:
 
-```bash
-# npm
-npm install
+# Installation
+You can use the following docker-compose to get started. It is also present in the repositories files.
 
-# pnpm
-pnpm install
+```
+services:
+  app:
+    image: ghcr.io/ejz9/ember:latest
+    container_name: ember_app
+    ports:
+      - "6000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/ember
+      # Better Auth requires a secret and the base URL
+      - BETTER_AUTH_SECRET={BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL={BETTER_AUTH_URL}
+      # Add OIDC provider details if using GitHub login
+      - GITHUB_CLIENT_ID={GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET={GITHUB_CLIENT_SECRET}
+    depends_on:
+      - mongo
+    restart: always
 
-# yarn
-yarn install
+  mongo:
+    image: mongo:6
+    container_name: ember_mongo
+    volumes:
+      - ember_data:/data/db
+    restart: always
 
-# bun
-bun install
+volumes:
+  ember_data:
 ```
 
-## Development Server
+# Architecture
+Ember is built using:
+- Bun - JavaScript Runtime
+- Nuxt 4 - Full stack framework
+- Vue.js 3 - Reactive frontend framework
+- Vite - Bundler for development and production
+- Nitro - Backend server of Nuxt.
+- MongoDB - noSQL database
+  Dependencies: https://github.com/Ejz9/Ember/blob/main/package.json
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
