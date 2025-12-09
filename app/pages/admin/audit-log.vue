@@ -14,7 +14,7 @@
       </template>
 
       <template #body>
-        <AdminRecentChanges />
+        <AdminRecentChanges :limit="5" />
       </template>
     </UDashboardPanel>
   </UDashboardPanel>

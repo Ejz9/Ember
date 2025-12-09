@@ -1,20 +1,52 @@
 <script setup lang="ts">
-import { getPaginationRowModel } from '@tanstack/vue-table'
+import { useInfiniteScroll } from '@vueuse/core'
 import type { TableColumn } from '@nuxt/ui'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   limit: number
-}>()
+  enableScroll?: boolean
+}>(), {
+  enableScroll: true
+})
 
-const page = ref(1)
-const table = useTemplateRef('table')
+const page = ref(1);
+const table = useTemplateRef<any>('table')
+const logs = ref<AuditLogEntry[]>([])
 
-const { data: changes, pending, error } = useFetch(`/api/admin/changes`, {
+const { data, pending, status } = await useFetch('/api/admin/changes', {
+  key: 'table-users-infinite-scroll',
   query: {
     limit: props.limit,
     page: page,
   },
+  watch: [page],
+  immediate: true
 });
+
+onMounted(() => {
+  if (props.enableScroll && table.value) {
+    useInfiniteScroll(
+        table.value.$el,
+        () => {
+          if (status.value !== 'pending') {
+            page.value++
+          }
+        },
+        {
+          distance: 5,
+          interval: 5
+        }
+    )
+  }
+})
+
+watch(data, (newBatch) => {
+  if (page.value === 1) {
+    logs.value = newBatch || []
+  } else if (newBatch && newBatch.length > 0) {
+    logs.value.push(...newBatch)
+  }
+}, { immediate: true })
 
 interface AuditLogEntry {
   snippetId: string
@@ -36,13 +68,13 @@ const columns: TableColumn<AuditLogEntry>[] = [
 <template>
   <UTable
       ref="table"
-      :data="changes"
+      :data="logs"
       :columns="columns"
-      :pagination-options="{ getPaginationRowModel: getPaginationRowModel() }"
+      :loading="pending"
       class="shrink-0"
       :ui="{
       base: 'table-fixed border-separate border-spacing-0',
-      thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
+      thead: props.enableScroll ? 'sticky top-0 z-10' : '[&>tr]:bg-elevated/50 [&>tr]:after:content-none\'',
       tbody: '[&>tr]:last:[&>td]:border-b-0',
       th: 'first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
       td: 'border-b border-default'
@@ -86,12 +118,4 @@ const columns: TableColumn<AuditLogEntry>[] = [
       {{ row.original.email }}
     </template>
   </UTable>
-  <div class="flex justify-end border-t border-default pt-4 px-4">
-    <UPagination
-        :page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
-        :items-per-page="table?.tableApi?.getState().pagination.pageSize"
-        :total="table?.tableApi?.getFilteredRowModel().rows.length"
-        @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)"
-    />
-  </div>
 </template>

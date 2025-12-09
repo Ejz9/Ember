@@ -12,11 +12,15 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const query = getQuery(event)
+    const query = getQuery(event);
+    const page = Number(query.page);
+    const limit = Number(query.limit);
+    const skip = (page - 1) * limit;
 
     return AuditLog.find()
-      .sort({ createdAt: -1 })
-      .limit(query.limit)
-      .select('snippetId userId email action createdAt -_id')
-      .lean();
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(query.limit)
+        .select('snippetId userId email action createdAt')
+        .lean();
 })
