@@ -66,9 +66,9 @@ onMounted(() => {
   }
 })
 
-const toast = useToast()
+//const toast = useToast()
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'primary' })
+  //toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'primary' })
   emit('submit', event.data)
 }
 

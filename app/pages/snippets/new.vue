@@ -11,17 +11,12 @@ const router = useRouter()
 
 async function createSnippet(formData) {
   try {
-    await $fetch('/api/snippets', {
+    const newSnippet = await $fetch('/api/snippets', {
       method: 'POST',
       body: formData
     });
     toast.add({ title: 'Success', description: 'Snippet created successfully.', color: 'primary' })
-    const user = session.data?.user
-    if (user) {
-      await router.push(`/user/${user.id}`)
-    } else {
-      await router.push('/')
-    }
+    await router.push(`/snippets/${newSnippet._id}`)
   } catch (error) {
     toast.add({ title: 'Error', description: 'Failed to create snippet.', color: 'error' })
   }
