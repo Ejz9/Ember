@@ -15,7 +15,9 @@ export function filteredSnippets (snippets: Snippet[] | undefined, query: string
         if (!query) {
             return true;
         }
-        return snippet.title.toLowerCase().includes(query.toLowerCase()) ||
-            snippet.description.toLowerCase().includes(query.toLowerCase())
+        console.log(snippet)
+        return (snippet.title?.toLowerCase() ?? '').includes(query.toLowerCase()) ||
+            (snippet.description?.toLowerCase() ?? '').includes(query.toLowerCase()) ||
+            (snippet.tags ?? []).some(tag => tag.toLowerCase().includes(query.toLowerCase()))
     });
 }
