@@ -6,6 +6,7 @@ const props = withDefaults(defineProps<{
   limit: number
   enableScroll?: boolean
 }>(), {
+  limit: 10,
   enableScroll: true
 })
 
@@ -33,8 +34,6 @@ onMounted(() => {
           }
         },
         {
-          distance: 5,
-          interval: 5
         }
     )
   }
@@ -70,11 +69,11 @@ const columns: TableColumn<AuditLogEntry>[] = [
       ref="table"
       :data="logs"
       :columns="columns"
-      :loading="pending"
       class="shrink-0"
+      :class="props.enableScroll ? 'h-full overflow-y-auto' : 'h-auto'"
       :ui="{
       base: 'table-fixed border-separate border-spacing-0',
-      thead: props.enableScroll ? 'sticky top-0 z-10' : '[&>tr]:bg-elevated/50 [&>tr]:after:content-none\'',
+      thead: props.enableScroll ? 'sticky top-0 z-10 [&>tr]:bg-elevated/50 [&>tr]:after:content-none\'' : '[&>tr]:bg-elevated/50 [&>tr]:after:content-none\'',
       tbody: '[&>tr]:last:[&>td]:border-b-0',
       th: 'first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
       td: 'border-b border-default'
@@ -114,7 +113,6 @@ const columns: TableColumn<AuditLogEntry>[] = [
     </template>
 
     <template #Email-cell="{ row }">
-
       {{ row.original.email }}
     </template>
   </UTable>

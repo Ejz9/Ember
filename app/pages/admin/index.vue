@@ -49,7 +49,7 @@ const period = ref<Period>('daily')
     <template #body>
       <AdminApplicationStats :period="period" :range="range" />
       <AdminActivityChart :period="period" :range="range " />
-      <AdminRecentChanges :limit="5" />
+      <AdminRecentChanges :limit="5" :enableScroll="false" />
     </template>
   </UDashboardPanel>
 </template>
