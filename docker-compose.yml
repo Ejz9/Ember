@@ -4,9 +4,20 @@ services:
     env_file:
       - .env
     ports:
-      - "23000:3000"
+      - "7667:3000"
     environment:
-      - MONGODB_URI=${MONGODB_URI}
+      - NUXT_MONGODB_URI=${MONGODB_URI}
+      # Better Auth requires a secret and the base URL
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      # Add OIDC provider details if using GitHub login
+      - NUXT_GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - NUXT_GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      # Blob storage requires:
+      - NUXT_BLOB_ENDPOINT=${}
+      - NUXT_BLOB_ACCESS_KEY=${}
+      - NUXT_BLOB_SECRET_KEY=${}
+      - NUXT_BLOB_BUCKET=${}
     volumes:
       - ember_public:/public
     restart: always

@@ -15,9 +15,14 @@ export default defineNuxtConfig({
       storage: {
           //TODO Cleanup for vercel blob and fs
           avatars: {
-              driver: process.env.NODE_ENV === 'production' ? 'vercel-blob' : 'fs',
+              driver: process.env.BLOB_ACCESS_KEY ? 's3' : 'fs',
               access: 'public',
-              base: "./public/uploads/avatars"
+              base: "./public/uploads/avatars",
+
+              blobAccessKey: process.env.BLOB_ACCESS_KEY,
+              blobSecretKey: process.env.BLOB_SECRET_KEY,
+              blobEndpoint: process.env.BLOB_ENDPOINT,
+              blobBucket: process.env.BLOB_BUCKET
           }
       }
     },
