@@ -1,6 +1,7 @@
 import { betterAuth, type BetterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import mongoose from 'mongoose';
+import { Buffer } from 'node:buffer';
 
 export let auth: BetterAuth;
 
@@ -79,8 +80,9 @@ async function downloadAndSaveAvatar(imageUrl: string | null | undefined): Promi
     }
 
     try {
-        const imageBlob: any = await $fetch(imageUrl, { responseType: 'blob' });
-        const imageBuffer = Buffer.from(await imageBlob.arrayBuffer());
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Failed to fetch avatar: ${response.statusText}`);
+        const imageBuffer = Buffer.from(await response.arrayBuffer());
 
         // Generate a unique filename from the GitHub user ID.
         const githubId = imageUrl.split('/u/')[1]?.split('?')[0];
@@ -88,31 +90,21 @@ async function downloadAndSaveAvatar(imageUrl: string | null | undefined): Promi
             throw new Error("Could not extract GitHub ID from image URL.");
         }
 
+        const contentType = response.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
         const extensionMap: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/gif': 'gif', 'image/webp': 'webp' };
-        const fileExtension = extensionMap[imageBlob.type] || 'jpg';
+        const fileExtension = (contentType && extensionMap[contentType]) || 'jpg';
         const newFileName = `${githubId}.${fileExtension}`;
-        const newUrl= `/api/avatars/${newFileName}`;
-
-        try {
-            const existingBlob: any = await useStorage().getItem(newFileName);
-            if (existingBlob.size === imageBuffer.byteLength) {
-                return existingBlob.url;
-            }
-        } catch (e) {
-
-        }
 
         // Save the new avatar. This will overwrite any existing file with the same name.
-        const blob: any = await useStorage().setItem(newFileName, imageBuffer, {
-            access: 'public',
-            addRandomSuffix: false, // keeps filename deterministic
-            allowOverwrite: true,
+        await useStorage('avatars').setItemRaw(newFileName, imageBuffer);
 
-        });
+        const config = useRuntimeConfig();
 
-        //TODO Clean up for fs and vercel blob
+        if (config.BLOB_PUBLIC_URL) {
+            return `${config.BLOB_PUBLIC_URL.replace(/\/$/, '')}/${newFileName}`;
+        }
 
-        return blob.url
+        return `/api/files/avatars/${newFileName}`;
     } catch (error) {
         console.error("Failed to download or process avatar:", error);
         return null;

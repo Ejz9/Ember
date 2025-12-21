@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+    BLOB_PUBLIC_URL: process.env.BLOB_PUBLIC_URL,
   },
     nitro: {
       //preset: 'bun',
@@ -17,12 +18,13 @@ export default defineNuxtConfig({
           avatars: {
               driver: process.env.BLOB_ACCESS_KEY ? 's3' : 'fs',
               access: 'public',
-              base: "./public/uploads/avatars",
+              base: "avatars",
 
-              blobAccessKey: process.env.BLOB_ACCESS_KEY,
-              blobSecretKey: process.env.BLOB_SECRET_KEY,
-              blobEndpoint: process.env.BLOB_ENDPOINT,
-              blobBucket: process.env.BLOB_BUCKET
+              accessKeyId: process.env.BLOB_ACCESS_KEY,
+              secretAccessKey: process.env.BLOB_SECRET_KEY,
+              endpoint: process.env.BLOB_ENDPOINT,
+              bucket: process.env.BLOB_BUCKET,
+              region: 'auto'
           }
       }
     },
